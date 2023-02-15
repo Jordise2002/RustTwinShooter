@@ -10,6 +10,8 @@ use crate::projectile::{Projectile};
 use macroquad::input::MouseButton;
 
 const HIT_INTERVAL:f64 = 0.5;
+const COOLDOWN:f64 =  0.25;
+const PLAYER_HEALTH:u32 = 3;
 pub struct GameManager
 {
     player: Player,
@@ -18,21 +20,24 @@ pub struct GameManager
     current_enemy_id:u32,
     current_bullet_id:u32,
     player_health:u32,
-    last_player_hit:f64
+    last_player_hit:f64,
+    last_shot:f64,
+    score:u32
 }
 
 impl GameManager
 {
     pub fn new() -> Self
     {
-        GameManager { player: Player::new(), enemies: vec![], bullets: vec![], current_enemy_id: 0, current_bullet_id:0,player_health:20,last_player_hit: time::get_time() }
+        GameManager { player: Player::new(), enemies: vec![], bullets: vec![], current_enemy_id: 0, current_bullet_id:0,player_health:PLAYER_HEALTH,last_player_hit: time::get_time(), last_shot: time::get_time() - 0.5,score:0 }
     }
 
     pub fn handle_input(&mut self)
     {
         self.player.handle_movement();
-        if is_mouse_button_pressed(MouseButton::Left)
+        if is_mouse_button_pressed(MouseButton::Left) && time::get_time() - self.last_shot > COOLDOWN
         {
+            self.last_shot = time::get_time();
             self.shoot();
         }
     }
@@ -56,6 +61,7 @@ impl GameManager
             bullet.draw();
         }
         draw_text(&self.player_health.to_string(), 20., 20., 30., WHITE);
+        draw_text(&self.score.to_string(), screen_width() - 40.,20.,30., WHITE)
     }
  
     fn spawn(&mut self)
@@ -92,7 +98,7 @@ impl GameManager
                 if bullet.check_colides(Box::new(enemy))
                 {
                     deaths.push(enemy.id);
-                    println!("bang");
+                    self.score = self.score +1 ;
                 }
             }
         }

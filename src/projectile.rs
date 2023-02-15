@@ -3,7 +3,7 @@ use macroquad::shapes::draw_rectangle;
 
 use crate::common_functions::Position;
 use crate::common_traits::EntityTrait;
-const PROJECTILE_SPEED:f32 = 3.5;
+const PROJECTILE_SPEED:f32 = 6.;
 const PROJECTILE_SIZE:f32 = 10.;
 pub struct Projectile 
 {
